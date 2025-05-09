@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 #define NOME 100
 #define MAX_MAX 100
@@ -64,7 +65,7 @@ void cadastro_cliente(FILE *arquivo){
 
 void cadastro_produto(FILE *produto_txt){
     produto prod;
-    char alimento = "Alimento";
+    char alimento[] = "Alimento";
     int codigo;
     int escolha = 0;
     char linha[MAX_MAX];
@@ -88,13 +89,13 @@ void cadastro_produto(FILE *produto_txt){
     }
     switch(escolha){
         case 1:
-            prod.categoria = 'Alimento';
+            strcpy(prod.categoria, "alimento");
             break;
         case 2:
-            prod.categoria = "Materia Limpeza";
+            strcpy(prod.categoria, "Material Limpeza");
             break;
         case 3:
-            prod.categoria = "panificacao";
+            strcpy(prod.categoria, "Panificacao");
             break;
         default:
             break;
@@ -122,7 +123,7 @@ void cadastro_produto(FILE *produto_txt){
         getchar();
     }
 
-    fprintf(produto_txt, "Codigo: %d\nNome: %sCategoria: %svalor de compra: %.2f\nmargem de lucro: %.2f\nvalor de venda: %.2f\nquantidade estoque: %d\nquantidade minima: %d\n\n\n", prod.codigo, prod.descricao, prod.categoria, prod.preco_compra, prod.margem_lucro, prod.preco_venda, prod.quantidade_estoque, prod.quantidade_minima);
+    fprintf(produto_txt, "Codigo: %d\nNome: %sCategoria: %s\nvalor de compra: %.2f\nmargem de lucro: %.2f\nvalor de venda: %.2f\nquantidade estoque: %d\nquantidade minima: %d\n\n\n", prod.codigo, prod.descricao, prod.categoria, prod.preco_compra, prod.margem_lucro, prod.preco_venda, prod.quantidade_estoque, prod.quantidade_minima);
     fclose(produto_txt);
 
     return produto_txt;
@@ -171,15 +172,19 @@ void nova_venda(FILE *produto_txt){
         if(sscanf(linha, "quantidade estoque: %d", &quantidade_estoque)){
             printf("%12d\n\n", quantidade_estoque);
         }
-
-        //printf("Linha lida: %s", linha);
     }
+    printf("Escolha o produto pelo codigo: ");
     fclose(produto_txt);
 }
 
 int main(){
+    produto prod;
     int escolha_menu;
+    int quantidade;
+    int codigo;
     int codigo_produto;
+    int escolha;
+    char linha[MAX_MAX];
 
     FILE* arquivo;
     arquivo = fopen("teste.txt", "a+");
@@ -234,6 +239,20 @@ int main(){
                     do{
                         case 1:
                             nova_venda(produto_txt);
+                            while(scanf("%d", &escolha) != 1){
+                                printf("digite um numero: >>");
+                                while(getchar() != '\n');
+                            }
+                            printf("Informe a quantidade do produto: ");
+                            scanf("%d", &quantidade);
+                            while(fgets(linha, sizeof(linha), produto_txt)){
+                                printf("%s", linha);
+                                if(sscanf(linha, "Codigo: %d", &codigo) == 1){
+                                    if(escolha == codigo){
+                                        printf("eeeeeeeeeeeuuu!!!");
+                                    }
+                                }
+                            }
                             break;
                         /*case 2:
                             retirada_de_caixa();

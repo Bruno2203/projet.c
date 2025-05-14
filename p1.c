@@ -148,8 +148,9 @@ int menuPrincipal()
 }
 
 void nova_venda(FILE *produto_txt){
-    produto amostra_produtos;
     char linha[MAX_MAX];
+    int escolha;
+    int quantidade;
     char nome[90];
     char categoria[90];
     float valor;
@@ -174,6 +175,23 @@ void nova_venda(FILE *produto_txt){
         }
     }
     printf("Escolha o produto pelo codigo: ");
+    rewind(produto_txt);
+    while(scanf("%d", &escolha) != 1){
+        printf("digite um numero: >>");
+        while(getchar() != '\n');
+    }
+    getchar();
+    printf("Informe a quantidade do produto: ");
+    scanf("%d", &quantidade);
+    getchar();
+    while(fgets(linha, sizeof(linha), produto_txt)){
+        printf("%s", linha);
+        if(sscanf(linha, "Codigo: %d", &codigo) == 1){
+            if(escolha == codigo){
+                printf("eeeeeeeeeeeuuu!!!");
+            }
+        }
+    }
     fclose(produto_txt);
 }
 
@@ -239,20 +257,7 @@ int main(){
                     do{
                         case 1:
                             nova_venda(produto_txt);
-                            while(scanf("%d", &escolha) != 1){
-                                printf("digite um numero: >>");
-                                while(getchar() != '\n');
-                            }
-                            printf("Informe a quantidade do produto: ");
-                            scanf("%d", &quantidade);
-                            while(fgets(linha, sizeof(linha), produto_txt)){
-                                printf("%s", linha);
-                                if(sscanf(linha, "Codigo: %d", &codigo) == 1){
-                                    if(escolha == codigo){
-                                        printf("eeeeeeeeeeeuuu!!!");
-                                    }
-                                }
-                            }
+
                             break;
                         /*case 2:
                             retirada_de_caixa();

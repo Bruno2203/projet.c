@@ -148,6 +148,7 @@ int menuPrincipal()
 }
 
 void nova_venda(FILE *produto_txt){
+    FILE *temporario;
     char linha[MAX_MAX];
     int escolha;
     int quantidade;
@@ -156,19 +157,27 @@ void nova_venda(FILE *produto_txt){
     float valor;
     int quantidade_estoque;
     int codigo;
+    long pos_inicio_linha;
+
+    temporario = fopen("temp.txt", "w");
+    if (temporario == NULL) {
+        printf("Erro ao criar o arquivo temporário.\n");
+        fclose(produto_txt);
+        return 1;
+    }
     printf("Codigo  |  Descricao   |   Categoria   |   Valor   |    Estoque\n\n");
     while (fgets(linha, sizeof(linha), produto_txt)) {
         if(sscanf(linha, "Codigo: %d", &codigo) == 1){
-            printf("%5d", codigo);
+            printf("%4d", codigo);
         }
         if(sscanf(linha, "Nome: %s", &nome)){
             printf("%12s", nome);
         }
         if(sscanf(linha, "Categoria: %s", &categoria)){
-            printf("%17s", categoria);
+            printf("%19s", categoria);
         }
         if(sscanf(linha, "valor de venda: %f", &valor)){
-            printf("%14.2f", valor);
+            printf("%13.2f", valor);
         }
         if(sscanf(linha, "quantidade estoque: %d", &quantidade_estoque)){
             printf("%12d\n\n", quantidade_estoque);
@@ -181,14 +190,21 @@ void nova_venda(FILE *produto_txt){
         while(getchar() != '\n');
     }
     getchar();
+
     printf("Informe a quantidade do produto: ");
     scanf("%d", &quantidade);
     getchar();
     while(fgets(linha, sizeof(linha), produto_txt)){
-        printf("%s", linha);
         if(sscanf(linha, "Codigo: %d", &codigo) == 1){
             if(escolha == codigo){
-                printf("eeeeeeeeeeeuuu!!!");
+                pos_inicio_linha = ftell(produto_txt) - strlen(linha);
+                if (sscanf(linha, "quantidade estoque: %d", &quantidade_estoque) == 1) {
+                    //volta ao inicio da linha
+                    fseek(produto_txt, pos_inicio_linha, SEEK_SET);
+                    fprintf(produto_txt, "quantidade estoque: %d", quantidade_estoque - quantidade);
+                    //garante gravaçao  no arquivo
+                    fflush(produto_txt);
+                }
             }
         }
     }

@@ -205,110 +205,109 @@ void nova_venda(FILE *produto_txt, FILE *vendas, float total, float desconto){
     int pagamento = 0;
     int descontoDaBere;
     char linha[MAX_MAX];
-    char continuar;
+    char compra;
     float lucro_total = 0;
 
-    do{
-        rewind(produto_txt);
-        printf("Codigo  |  Descricao   |   Categoria   |   Valor   |    Estoque\n\n");
-        while (fgets(linha, sizeof(linha), produto_txt)) {
-            if (sscanf(linha, "Codigo: %d", &prod.codigo) == 1) {
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "Nome: %[^\n]", prod.descricao);
 
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "Categoria: %[^\n]", prod.categoria);
+    rewind(produto_txt);
+    printf("Codigo  |  Descricao   |   Categoria   |   Valor   |    Estoque\n\n");
+    while (fgets(linha, sizeof(linha), produto_txt)) {
+        if (sscanf(linha, "Codigo: %d", &prod.codigo) == 1) {
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "Nome: %[^\n]", prod.descricao);
 
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "valor de compra: %f", &prod.preco_compra);
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "Categoria: %[^\n]", prod.categoria);
 
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "margem de lucro: %f", &prod.margem_lucro);
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "valor de compra: %f", &prod.preco_compra);
 
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "valor de venda: %f", &prod.preco_venda);
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "margem de lucro: %f", &prod.margem_lucro);
 
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "quantidade estoque: %d", &prod.quantidade_estoque);
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "valor de venda: %f", &prod.preco_venda);
 
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "quantidade minima: %d", &prod.quantidade_minima);
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "quantidade estoque: %d", &prod.quantidade_estoque);
 
-                printf("%6d | %12s | %13s | %8.2f | %9d\n",
-                   prod.codigo, prod.descricao, prod.categoria, prod.preco_venda, prod.quantidade_estoque);
-            }
-        }
-        printf("\n%50s Total: R$ %.2f\n", "", total);
-        printf("%47s Desconto: R$ %.2f\n", "", desconto);
-        printf("%44s Total final: R$ %.2f\n", "", total - desconto);
-        rewind(produto_txt);
-        printf("insira o codigo do produto: ");
-        while(scanf("%d", &escolha) != 1){
-            printf("digite um numero: >>");
-            while(getchar() != '\n');
-        }
-        getchar();
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "quantidade minima: %d", &prod.quantidade_minima);
 
-        printf("Informe a quantidade do produto: ");
-        while(scanf("%d", &quantidade) != 1){
-            printf("digite um numero: >>");
-            while(getchar() != '\n');
-        }
-        getchar();
-        while (fgets(linha, sizeof(linha), produto_txt)) {
-            if (sscanf(linha, "Codigo: %d", &prod.codigo) == 1) {
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "Nome: %[^\n]", prod.descricao);
-
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "Categoria: %[^\n]", prod.categoria);
-
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "valor de compra: %f", &prod.preco_compra);
-
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "margem de lucro: %f", &prod.margem_lucro);
-
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "valor de venda: %f", &prod.preco_venda);
-
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "quantidade estoque: %d", &prod.quantidade_estoque);
-
-                fgets(linha, sizeof(linha), produto_txt);
-                sscanf(linha, "quantidade minima: %d", &prod.quantidade_minima);
-
-                if(escolha == prod.codigo){
-                    lucro_total += salvar_vendas(vendas, produto_txt, escolha, quantidade);
-                    atualiza_estoque(produto_txt, escolha, quantidade);
-                    float aux = prod.preco_venda * quantidade;
-                    total = total + aux;
-                    break;
-                }
-            }
-        }
-        printf("\nDeseja adicionar mais produtos? (s/n): ");
-        scanf(" %c", &continuar);
-        getchar();
-
-    }while (continuar == 's' || continuar == 'S');
-    if (continuar == 'n' || continuar == 'N') {
-        // Aplica desconto, imprime total e sai da função
-        if (total <= 50) {
-            desconto = total * 0.05;
-        } else if (total > 50 && total < 200) {
-            desconto = total * 0.1;
-        } else if (total >= 200) {
-            printf("Valor da compra maior que 200!\nDigite o valor do desconto em porcentagem Ex:(10 = 10%): >> ");
-            scanf("%d", &descontoDaBere);
-            desconto = total * (descontoDaBere / 100.0);
+            printf("%6d | %12s | %13s | %8.2f | %9d\n",
+                prod.codigo, prod.descricao, prod.categoria, prod.preco_venda, prod.quantidade_estoque);
         }
     }
-        printf("\n%50s Total: R$ %.2f\n", "", total);
-        printf("%47s Desconto: R$ %.2f\n", "", desconto);
-        printf("%44s Total final: R$ %.2f\n", "", total - desconto);
+    printf("\n%50s Total: R$ %.2f\n", "", total);
+    printf("%47s Desconto: R$ %.2f\n", "", desconto);
+    printf("%44s Total final: R$ %.2f\n", "", total - desconto);
+    rewind(produto_txt);
+    printf("insira o codigo do produto: ");
+    while(scanf("%d", &escolha) != 1){
+        printf("digite um numero: >>");
+        while(getchar() != '\n');
+    }
+    getchar();
 
-        fprintf(vendas, "Lucro Total: %.2f\n\n", lucro_total);
+    printf("Informe a quantidade do produto: ");
+    while(scanf("%d", &quantidade) != 1){
+        printf("digite um numero: >>");
+        while(getchar() != '\n');
+    }
+    getchar();
+    while (fgets(linha, sizeof(linha), produto_txt)) {
+        if (sscanf(linha, "Codigo: %d", &prod.codigo) == 1) {
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "Nome: %[^\n]", prod.descricao);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "Categoria: %[^\n]", prod.categoria);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "valor de compra: %f", &prod.preco_compra);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "margem de lucro: %f", &prod.margem_lucro);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "valor de venda: %f", &prod.preco_venda);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "quantidade estoque: %d", &prod.quantidade_estoque);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "quantidade minima: %d", &prod.quantidade_minima);
+
+            if(escolha == prod.codigo){
+                lucro_total += salvar_vendas(vendas, produto_txt, escolha, quantidade);
+                atualiza_estoque(produto_txt, escolha, quantidade);
+                float aux = prod.preco_venda * quantidade;
+                total = total + aux;
+                break;
+            }
+        }
+    }
+    // Mostrando para o usuario se ele quer permanecer ou não da categoria que escolheu
+    printf("\nDeseja adicionar mais produtos? (s/n): ");
+    // Guarda a escolha do usuário
+    scanf(" %c", &compra);
+
+    // Aplica desconto, imprime total e sai da função
+    if (total <= 50) {
+        desconto = total * 0.05;
+    } else if (total > 50 && total < 200) {
+        desconto = total * 0.1;
+    } else if (total >= 200) {
+        printf("Valor da compra maior que 200!\nDigite o valor do desconto em porcentagem Ex:(10 = 10%): >> ");
+        scanf("%d", &descontoDaBere);
+        desconto = total * (descontoDaBere / 100.0);
+    }
+
+    printf("\n%50s Total: R$ %.2f\n", "", total);
+    printf("%47s Desconto: R$ %.2f\n", "", desconto);
+    printf("%44s Total final: R$ %.2f\n", "", total - desconto);
+
+    fprintf(vendas, "Lucro Total: %.2f\n\n", lucro_total);
     return total, desconto;
 }
 
@@ -427,7 +426,7 @@ int main(){
     int codigo_produto;
     int escolha;
     int numero_de_cadastros;
-    char continuar;
+    char compra;
     char linha[MAX_MAX];
     float total;
     float desconto;
@@ -515,10 +514,17 @@ int main(){
                         case 1:
                             do{
                                 nova_venda(produto_txt, vendas, total, desconto);
+
                                 printf("%f %f", total, desconto);
+                                escolha_menu = 0;
                                 printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
+                            } while (compra == 'S' || compra == 's');
+
+                            if (compra == 'n' || compra == 'N')
+                            {
+                                menuPrincipal();
                                 scanf("%d", &escolha_menu);
-                            }while(escolha_menu != 1);
+                            }
                             fclose(produto_txt);
                             break;
                         case 2:

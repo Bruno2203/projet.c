@@ -308,6 +308,7 @@ void nova_venda(FILE *produto_txt, FILE *vendas, float total, float desconto){
     printf("%44s Total final: R$ %.2f\n", "", total - desconto);
 
     fprintf(vendas, "Lucro Total: %.2f\n\n", lucro_total);
+    printf("%f %f", total, desconto);
     return total, desconto;
 }
 
@@ -426,6 +427,7 @@ int main(){
     int codigo_produto;
     int escolha;
     int numero_de_cadastros;
+    int nova_escolha;
     char compra;
     char linha[MAX_MAX];
     float total;
@@ -461,12 +463,12 @@ int main(){
     do{
         switch(escolha_menu){
             case 1:
-               do{
-                    escolha_menu = 0;
+                do{
+
                     printf("\n\n1) Cadastrar cliente\n2) Cadastrar produto\n3) Voltar ao menu principal\n\nEscolha uma opcao: >>");
-                    scanf("%d", &escolha_menu);
+                    scanf("%d", &nova_escolha);
                     getchar();
-                    switch(escolha_menu){
+                    switch(nova_escolha){
                         case 1:
                             do{
                                 printf("Quantos clientes serao cadastrados: ");
@@ -475,9 +477,9 @@ int main(){
                                 for(int i = 1; i <= numero_de_cadastros; i++){
                                     cadastro_cliente(arquivo);
                                 }
-                                escolha_menu = 0;
+                                nova_escolha = 0;
                                 printf("\n 1) Cadastrar cliente\n 2) Cadastrar produto\n 3) Voltar ao menu principal\n\nEscolha uma opcao: >>");
-                            }while(escolha_menu == 1);
+                            }while(nova_escolha == 1);
                         scanf("%d", &escolha_menu);
                         getchar();
                         case 2:
@@ -494,36 +496,32 @@ int main(){
                         scanf("%d", &escolha_menu);
                         getchar();
                         case 3:
-                            do{
-                                menuPrincipal();
-                                escolha_menu = 0;
-                            }while(escolha_menu == 3);
+                            menuPrincipal();
+                            scanf("%d", &escolha_menu);
+                            break;
+
                     }
                 }while(escolha_menu == 1);
-                if(escolha_menu == 3){
-                    break;
-                }
-
+                continue;
             case 2:
-                escolha_menu = 0;
-                printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
-                scanf("%d", &escolha_menu);
-                getchar();
-                switch(escolha_menu){
-                    do{
+                do{
+                    nova_escolha = 0;
+                    printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
+                    scanf("%d", &nova_escolha);
+                    getchar();
+                    switch(nova_escolha){
                         case 1:
-                            do{
-                                nova_venda(produto_txt, vendas, total, desconto);
+                            nova_escolha = 0;
+                            nova_venda(produto_txt, vendas, total, desconto);
+                            printf("%f %f", total, desconto);
 
-                                printf("%f %f", total, desconto);
-                                escolha_menu = 0;
-                                printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
-                            } while (compra == 'S' || compra == 's');
+
+                            printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
 
                             if (compra == 'n' || compra == 'N')
                             {
                                 menuPrincipal();
-                                scanf("%d", &escolha_menu);
+                                scanf("%d", &nova_escolha);
                             }
                             fclose(produto_txt);
                             break;
@@ -538,9 +536,8 @@ int main(){
                                 printf("Escolha somente uma das opcoes >> ");
                                 while(getchar() != '\n');
                             }
-
-                    }while(escolha_menu != 2);
-                }
+                    }
+                }while(escolha_menu == 2);
                 break;
             case 3:
                 break;
@@ -579,7 +576,7 @@ int main(){
             }
             getchar();
         }
-    }while(escolha_menu > 7);
+    }while(escolha_menu > 0 || escolha_menu < 7);
 
 
     return 0;

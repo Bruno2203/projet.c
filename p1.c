@@ -28,6 +28,9 @@ typedef struct{
 
 }produto;
 
+float total;
+float desconto;
+
 void cadastro_cliente(FILE *arquivo){
     cadastro usuario;
     int codigo;
@@ -197,7 +200,7 @@ int salvar_vendas(FILE *vendas,FILE *produto_txt, int codigo, int quantidade_ven
     }
 }
 
-void nova_venda(FILE *produto_txt, FILE *vendas, float total, float desconto){
+float nova_venda(FILE *produto_txt, FILE *vendas){
     produto prod;
     int quantidade_estoque;
     int escolha;
@@ -309,31 +312,84 @@ void nova_venda(FILE *produto_txt, FILE *vendas, float total, float desconto){
 
     fprintf(vendas, "Lucro Total: %.2f\n\n", lucro_total);
     printf("%f %f", total, desconto);
+
     return total, desconto;
 }
 
+#include <stdio.h>
+
 void atualiza_estoque(FILE *produto_txt, int codigo, int quantidade_vendida) {
+    FILE *temp = fopen("temp.txt", "w+");
+    if (!temp) {
+        printf("Erro ao abrir arquivo temporário.\n");
+        return;
+    }
+
     produto prod;
+    char linha[MAX_MAX];
+    int encontrou = 0;
 
-    // Percorre o arquivo procurando o produto
-    while (fread(&prod, sizeof(produto), 1, produto_txt) == 1) {
-        if (prod.codigo == codigo) {
-            // Atualiza a quantidade
-            if (prod.quantidade_estoque >= quantidade_vendida) {
-                prod.quantidade_estoque -= quantidade_vendida;
+    rewind(produto_txt); // volta ao início do arquivo
 
-                // Move o ponteiro de volta para regravar este produto
-                fseek(produto_txt, -sizeof(produto), SEEK_CUR);
-                fwrite(&prod, sizeof(produto), 1, produto_txt);
-                printf("Estoque atualizado com sucesso.\n");
-            } else {
-                printf("Estoque insuficiente.\n");
+    while (fgets(linha, sizeof(linha), produto_txt)) {
+        if (sscanf(linha, "Codigo: %d", &prod.codigo) == 1) {
+            fprintf(temp, "%d", linha); // escreve a linha do código
+
+            fgets(prod.descricao, sizeof(prod.descricao), produto_txt);
+            fprintf(temp, "%s", prod.descricao);
+
+            fgets(prod.categoria, sizeof(prod.categoria), produto_txt);
+            fprintf(temp, "%s", prod.categoria);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "valor de compra: %f", &prod.preco_compra);
+            fprintf(temp, "%f", linha);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "margem de lucro: %d", &prod.margem_lucro);
+            fprintf(temp, "%d", linha);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "valor de venda: %f", &prod.preco_venda);
+            fprintf(temp, "%f", linha);
+
+            fgets(linha, sizeof(linha), produto_txt);
+            sscanf(linha, "quantidade estoque: %d", &prod.quantidade_estoque);
+
+            // Atualiza estoque se for o produto certo
+            if (prod.codigo == codigo) {
+                if (prod.quantidade_estoque >= quantidade_vendida) {
+                    prod.quantidade_estoque -= quantidade_vendida;
+                    encontrou = 1;
+                } else {
+                    printf("Estoque insuficiente para o produto %d.\n", prod.codigo);
+                }
             }
-            fclose(produto_txt);
-            return;
+            fprintf(temp, "quantidade estoque: %d\n", prod.quantidade_estoque);
+
+            fgets(linha, sizeof(linha), produto_txt); // quantidade minima
+            fprintf(temp, "%s", linha);
+
+            // pula linhas em branco se houver
+            while (fgets(linha, sizeof(linha), produto_txt) && strcmp(linha, "\n") == 0) {
+                fprintf(temp, "%s", linha);
+            }
+            if (!feof(produto_txt)) fseek(produto_txt, -strlen(linha), SEEK_CUR); // recua se não acabou
+        } else {
+            fprintf(temp, "%s", linha); // escreve linhas que não são de produtos
         }
     }
 
+    fclose(produto_txt);
+    fclose(temp);
+
+    // Substitui o arquivo original
+    remove("produto.txt");
+    rename("temp.txt", "produto.txt");
+
+    if (encontrou) {
+        printf("Estoque atualizado com sucesso!\n");
+    }
 }
 
 int retirada_caixa(FILE *produto_txt){
@@ -430,8 +486,6 @@ int main(){
     int nova_escolha;
     char compra;
     char linha[MAX_MAX];
-    float total;
-    float desconto;
 
     FILE* arquivo;
     arquivo = fopen("cliente.txt", "a+");
@@ -512,7 +566,7 @@ int main(){
                     switch(nova_escolha){
                         case 1:
                             nova_escolha = 0;
-                            nova_venda(produto_txt, vendas, total, desconto);
+                            nova_venda(produto_txt, vendas);
                             printf("%f %f", total, desconto);
 
 

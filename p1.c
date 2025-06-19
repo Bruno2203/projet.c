@@ -3,7 +3,10 @@
 #include<string.h>
 
 #define NOME 100
+//Definindo os tamanhos das senhas e logins
 #define MAX_MAX 100
+#define MAX_LOGIN 13
+#define MAX_SENHA 9
 
 typedef struct{
     int codigo;
@@ -27,9 +30,125 @@ typedef struct{
     int quantidade_minima;
 
 }produto;
-
+float abertura;
+int adm;
+int verificaUsuario = 0;
 float total;
+float caixa;
 float desconto;
+float caixaAberto;
+
+// ESTRUTURA PARA LOGIN E SENHA
+typedef struct user{
+    // CRIANDO UMA STRING PARA O LOGIN
+    char login[MAX_LOGIN];
+    // CRIANDO UMA ESTRUTURA PARA A SENHA
+    char senha[MAX_SENHA];
+    // DECLARAMOS UMA VARIAVEL AUXILIAR
+    int tamanho;
+    // DECLARAMOS UMA VARIAVEL PARA VERIFICRA SE O LOGIN SERA DE ADM OU USUARIO
+    int opcao;
+}user;
+
+
+
+
+// FUNCAO QUE CHAMA OS CADASTROS DE LOGIN
+char* login (){
+    int verificacao = 0;
+    // DECLARAMOS A VARIAVEL USUARIOS DO TIPO ESTRUTURA QUE SE CHAMA USER
+    static user usuarios;
+    printf("\n\033[31m-------------- \033[0mCADASTRO DE USUARIOS\033[31m -------------\033[0m\n"
+           "1 - ADMIN\n"
+           "2 - VISITANTE\n"
+           "\nEsolha entre as opcoes abaixo: >> ");
+    scanf("%d", &usuarios.opcao);
+    // comeco do switch
+    switch(usuarios.opcao){
+        // caso usuario escolha a opcao 1 ele entrara aqui
+        case 1:
+            // adm recebera o valor 1
+            adm = 1;
+            // Obrigando o sistema parar
+            break;
+        // caso o usuario escolha a opcao 2 ele entrara aqui
+        case 2:
+            // adm recebera o valor 0
+            adm = 0;
+            // Obrigando o sistema parar
+            break;
+        //
+        default:
+            printf("Escolha invalida...\n");
+
+    }
+    // PRINT PARA MOSTRAR QUE O USUARIO DEVE INSERIR O LOGIN
+    printf("Insira o nome do Login (Entre 8 e 12 Caracteres): >> ");
+    // ESTAMOS GUARDANDO O VALOR DIGITADO NA VARIAVEL LOGIN
+    scanf("%s", &usuarios.login);
+    // ESTAMOS INSERINDO O TAMANHO DA STRING QUE SE CHAMA LOGIN E ESTAMOS INSERINDO ELA NA VARIAVEL TAMANHO
+    usuarios.tamanho = strlen(usuarios.login);
+    // INICIANDO O DO WHILE
+    do{
+        // VERIFICANDO SE O TAMANHO DA STRING E INFERIOR A 8 E MAIOR QUE 12
+        if(usuarios.tamanho >= 8 && usuarios.tamanho <=12){
+            // MOSTRANDO PARA O USUARIO QUE O LOGIN FOI CADASTRADO COM SUCESSO
+            printf("\033[32mNome de Login aceito com sucesso :)\033[0m");
+            // INSERINDO A VARIAVLE AUX O VALOR 1 PARA ELE SAIR DO DO WHILE
+            verificacao = 1;
+        }// FINAL DA VERIFICACAO
+
+        // SE NAO ENTROU NO IF VAI ENTRAR NA PORTINHA DO ELSE
+        else{
+            // MOSTRANDO PARA O USUARIO QUE NAO FOI POSSIVEL CADASTRAR O NOME DO LOGIN
+            printf("\nNao foi possivel cadastrar esse nome de Login ...\n");
+            // PRINT PARA MOSTRAR QUE O USUARIO DEVE INSERIR O LOGIN
+            printf("Insira outro nome de Login (Entre 8 e 12 Caracteres): >> ");
+            // ESTAMOS GUARDANDO O VALOR DIGITADO NA VARIAVEL LOGIN
+            scanf("%s", &usuarios.login);
+            getchar();
+            // ESTAMOS INSERINDO O TAMANHO DA STRING QUE SE CHAMA LOGIN E ESTAMOS INSERINDO ELA NA VARIAVEL TAMANHO
+            usuarios.tamanho = strlen(usuarios.login);
+        }
+    //FIM DO DO WHILW JUNTO COM A CONDICAO DO WHILE
+    }while(verificacao ==0);
+
+
+    // PRINT PARA MOSTRAR QUE O USUARIO DEVE INSERIR O LOGIN
+    printf("\n\nInsira uma Senha (Entre 6 e 8 Caracteres): >> ");
+    // ESTAMOS GUARDANDO O VALOR DIGITADO NA VARIAVEL LOGIN
+    scanf("%s", &usuarios.senha);
+    getchar();
+    // ESTAMOS INSERINDO O TAMANHO DA STRING QUE SE CHAMA LOGIN E ESTAMOS INSERINDO ELA NA VARIAVEL TAMANHO
+    usuarios.tamanho = strlen(usuarios.senha);
+    // INICIANDO O DO WHILE
+    do{
+        // VERIFICANDO SE O TAMANHO DA STRING E INFERIOR A 8 E MAIOR QUE 12
+        if(usuarios.tamanho >= 6 && usuarios.tamanho <=8){
+            // INSERINDO A VARIAVLE AUX O VALOR 1 PARA ELE SAIR DO DO WHILE
+            verificacao = 1;
+        }// FINAL DA VERIFICACAO
+
+        // SE NAO ENTROU NO IF VAI ENTRAR NA PORTINHA DO ELSE
+        else{
+            // MOSTRANDO PARA O USUARIO QUE NAO FOI POSSIVEL CADASTRAR O NOME DO LOGIN
+            printf("Nao foi possivel cadastrar esse Senha ...\n");
+            // PRINT PARA MOSTRAR QUE O USUARIO DEVE INSERIR O LOGIN
+            printf("Insira outro Senha (Entre 6 e 8 Caracteres): >> ");
+            // ESTAMOS GUARDANDO O VALOR DIGITADO NA VARIAVEL LOGIN
+            scanf("%s", &usuarios.senha);
+            getchar();
+            // ESTAMOS INSERINDO O TAMANHO DA STRING QUE SE CHAMA LOGIN E ESTAMOS INSERINDO ELA NA VARIAVEL TAMANHO
+            usuarios.tamanho = strlen(usuarios.senha);
+        }
+    //FIM DO DO WHILW JUNTO COM A CONDICAO DO WHILE
+    }while(verificacao == 0 );
+
+    verificaUsuario = 1;
+    printf("\n\033[32mLOGIN EFETUADO COM A CONTA: %s\033[0m\n\n", usuarios.login);
+    return usuarios.senha;
+}
+
 
 void cadastro_cliente(FILE *arquivo){
     cadastro usuario;
@@ -41,9 +160,9 @@ void cadastro_cliente(FILE *arquivo){
             usuario.codigo = codigo + 1;
         }
     }
-    printf("**********************************************\n");
+    printf("\n");
     printf("    ***       Cadastro Cliente       ***      \n");
-    printf("**********************************************\n");
+    printf("\n");
 
     printf("Digite o seu nome completo: ");
     fgets(usuario.nome, sizeof(usuario.nome), stdin);
@@ -78,9 +197,9 @@ void cadastro_produto(FILE *produto_txt){
             prod.codigo = codigo + 1;
         }
     }
-    printf("**********************************************\n");
+    printf("\n");
     printf("    ***       Cadastro produto       ***      \n");
-    printf("**********************************************\n");
+    printf("\n");
 
     printf("Nome e descricao do produto: ");
     fgets(prod.descricao, sizeof(prod.descricao), stdin);
@@ -146,7 +265,7 @@ int menuPrincipal()
            "7. Sair\n\n");
 
     // Aqui o usuário escolhe a opção do Menu Principal
-    printf("Digite o numero da categoria: ");
+    printf("Digite o numero da categoria: >> ");
     return 0;
 }
 
@@ -316,8 +435,6 @@ float nova_venda(FILE *produto_txt, FILE *vendas){
     return total, desconto;
 }
 
-#include <stdio.h>
-
 void atualiza_estoque(FILE *produto_txt, int codigo, int quantidade_vendida) {
     FILE *temp = fopen("temp.txt", "w+");
     if (!temp) {
@@ -392,9 +509,6 @@ void atualiza_estoque(FILE *produto_txt, int codigo, int quantidade_vendida) {
     }
 }
 
-int retirada_caixa(FILE *produto_txt){
-
-}
 void pagamento_f(float total, float desconto) {
     int escolha;
     int pagamento_cartao;
@@ -473,9 +587,39 @@ void pagamento_f(float total, float desconto) {
     }
 }
 
+void abrirCaixa() {
+    printf("\n\033[31m-------------- \033[0mREALIZANDO A ABERTURA DO CAIXA\033[31m -------------\033[0m\n\n");
+    int caixaAberto = 0;
+    float abertura;
+    // Se o caixa já está aberto com dinheiro
+    if(caixaAberto == 1) {
+        printf("Caixa já está aberto.\n");
+        return;
+    }
+
+    // Solicita a Dona Berê o valor que ocorrerá a abertura de caixa
+    printf("Digite o valor de abertura do caixa: R$ ");
+    // Função que faz a leitura da escolha do usuário
+    scanf("%f", &abertura);
+
+    caixa = abertura;
+    caixaAberto = 1;
+
+}
+
+
+// Função de Fechamento de Caixa, exibindo os saldos do dia
+void fecharCaixa() {
+    printf("\n===== FECHAMENTO DE CAIXA =====\n\n");
+    printf("Valor inicial: R$ %.2f\n", abertura);
+    printf("Valor final em caixa: R$ %.2f\n", caixa);
+    printf("Total movimentado: R$ %.2f\n\n", caixa - abertura);
+    caixaAberto = 0;
+}
 
 
 int main(){
+    char senhas[MAX_SENHA];
     produto prod;
     int escolha_menu;
     int quantidade;
@@ -508,7 +652,6 @@ int main(){
         printf("Erro ao encontrar o arquivo!");
         return 1;
     }
-
     menuPrincipal();
     while(scanf("%d", &escolha_menu) != 1){
         printf("Escolha somente uma das opcoes: >>");
@@ -519,23 +662,17 @@ int main(){
             case 1:
                 do{
 
-                    printf("\n\n1) Cadastrar cliente\n2) Cadastrar produto\n3) Voltar ao menu principal\n\nEscolha uma opcao: >>");
+                    printf("\n\n1) Cadastrar Usuario\n2) Cadastrar Clientes\n3) Cadastrar Produtos\n4) Cadastrar Categoria\n5) Voltar ao menu principal\n\nEscolha uma opcao: >>");
                     scanf("%d", &nova_escolha);
                     getchar();
                     switch(nova_escolha){
                         case 1:
-                            do{
-                                printf("Quantos clientes serao cadastrados: ");
-                                scanf("%d", &numero_de_cadastros);
-                                getchar();
-                                for(int i = 1; i <= numero_de_cadastros; i++){
-                                    cadastro_cliente(arquivo);
-                                }
-                                nova_escolha = 0;
-                                printf("\n 1) Cadastrar cliente\n 2) Cadastrar produto\n 3) Voltar ao menu principal\n\nEscolha uma opcao: >>");
-                            }while(nova_escolha == 1);
-                        scanf("%d", &escolha_menu);
-                        getchar();
+                            strcpy(senhas, login());
+                            menuPrincipal();
+                            while(scanf("%d", &escolha_menu) != 1){
+                                printf("Escolha somente uma das opcoes: >>");
+                                while(getchar() != '\n');
+                            }break;
                         case 2:
                             do{
                                 printf("Quantos clientes serao cadastrados: ");
@@ -557,8 +694,27 @@ int main(){
                     }
                 }while(escolha_menu == 1);
                 continue;
+
             case 2:
-                do{
+                // INICIANDO O WHILE PARA VERIFICAR SE O USUARIO CADASTROU UMA CONTA
+                while(verificaUsuario == 0){
+                    // MOSTRANDO PARA O USUARIO QUE NHENUM USUARIO FOI ENCONTRADO
+                    printf("\n\033[31mNenhum Usuario foi encontrado !\033[0m\n"
+                           "Favor cadastre um Usuario para prosseguir com o\033[31m SISTEMA !\033[0m\n");
+                    // CHAMANDO A FUNCAO DO MENU PRINCIPAL
+                    menuPrincipal();
+                    while(scanf("%d", &escolha_menu) != 1){
+                            printf("Escolha somente uma das opcoes >> ");
+                            while(getchar() != '\n');
+                    }
+                    // AQUI ESTOU VERIFICANDO SE A ESCOLHA QUE O USUARIO FEZ FOI A 1
+                    if(escolha_menu == 1){
+                        // REALIZANDO ISSO PARA O SUSUARIO SAIR DO WHILE
+                        verificaUsuario = 3;
+                    }break;
+                }
+
+                if(verificaUsuario == 1){
                     nova_escolha = 0;
                     printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
                     scanf("%d", &nova_escolha);
@@ -568,10 +724,7 @@ int main(){
                             nova_escolha = 0;
                             nova_venda(produto_txt, vendas);
                             printf("%f %f", total, desconto);
-
-
                             printf("\n 1) Nova venda\n 2) Retirada de caixa\n 3) Pagamento\n 4) Voltar ao menu principal\n\nEscolha uma opcao: >>");
-
                             if (compra == 'n' || compra == 'N')
                             {
                                 menuPrincipal();
@@ -580,22 +733,138 @@ int main(){
                             fclose(produto_txt);
                             break;
                         case 2:
-                            retirada_caixa(produto_txt);
+                            //retirada_caixa(produto_txt);
                             break;
                         case 3:
                             pagamento_f(total, desconto);
+                            break;
                         case 4:
                             menuPrincipal();
                             while(scanf("%d", &escolha_menu) != 1){
                                 printf("Escolha somente uma das opcoes >> ");
                                 while(getchar() != '\n');
                             }
+                            break;
                     }
-                }while(escolha_menu == 2);
+                }
                 break;
             case 3:
-                break;
+
+                // INICIANDO O WHILE PARA VERIFICAR SE O USUARIO CADASTROU UMA CONTA
+                while(verificaUsuario == 0){
+                    // MOSTRANDO PARA O USUARIO QUE NHENUM USUARIO FOI ENCONTRADO
+                    printf("\n\033[31mNenhum Usuario foi encontrado !\033[0m\n"
+                           "Favor cadastre um Usuario para prosseguir com o\033[31m SISTEMA !\033[0m\n");
+                    // CHAMANDO A FUNCAO DO MENU PRINCIPAL
+                    menuPrincipal();
+                    while(scanf("%d", &escolha_menu) != 1){
+                            printf("Escolha somente uma das opcoes >> ");
+                            while(getchar() != '\n');
+                    }
+                    // AQUI ESTOU VERIFICANDO SE A ESCOLHA QUE O USUARIO FEZ FOI A 1
+                    if(escolha_menu == 1){
+                        // REALIZANDO ISSO PARA O SUSUARIO SAIR DO WHILE
+                        verificaUsuario = 3;
+                    }
+                }
+
+                if(verificaUsuario == 1){
+                    char verificaSenha[MAX_SENHA];
+                    int opSenha, tam;
+                    int verificacao = 0;
+
+                    //verifica se quem esta tentando abrir o caixa é o admin
+                    if(adm == 0){
+                        printf("\033[31mATENCAO: \033[0mSeu usuario nao tem permisao para essa acao !\n");
+
+                        menuPrincipal();
+                        while(scanf("%d", &escolha_menu) != 1){
+                            printf("Escolha somente uma das opcoes: >>");
+                            while(getchar() != '\n');
+                        }break;
+                    }
+
+                    printf("\n\033[31m-------------- \033[0mATENCAO\033[31m -------------\033[0m\n");
+                    printf("Favor para Seguranca do Sistema insira a Senha do Usuario: ");
+                    scanf("%s", &verificaSenha);
+
+                    if(strcmp(verificaSenha ,senhas) != 0){
+                        printf("\n\033[31mA SENHA INFORMADA NAO E A MESA QUE A CADASTRADA !\033[0m\n"
+                               "1 - REDEFINIR SENHA\n"
+                               "2 - INSERIR SENHA NOVAMENTE\n"
+                               "\nEsolha entre as opcoes acima: >>");
+                        scanf("%d", &opSenha);
+
+                        switch(opSenha){
+                            case 1:
+                                // PRINT PARA MOSTRAR QUE O USUARIO DEVE INSERIR O LOGIN
+                                printf("\nInsira uma Senha (Entre 6 e 8 Caracteres): ");
+                                // ESTAMOS GUARDANDO O VALOR DIGITADO NA VARIAVEL LOGIN
+                                scanf("%s", &verificaSenha);
+                                getchar();
+                                // ESTAMOS INSERINDO O TAMANHO DA STRING QUE SE CHAMA LOGIN E ESTAMOS INSERINDO ELA NA VARIAVEL TAMANHO
+                                tam = strlen(verificaSenha);
+                                // INICIANDO O DO WHILE
+                                do{
+                                    // VERIFICANDO SE O TAMANHO DA STRING E INFERIOR A 8 E MAIOR QUE 12
+                                    if(tam >= 6 && tam <=8){
+                                        // INSERINDO A VARIAVLE AUX O VALOR 1 PARA ELE SAIR DO DO WHILE
+                                        verificacao = 1;
+                                    }// FINAL DA VERIFICACAO
+                                    // SE NAO ENTROU NO IF VAI ENTRAR NA PORTINHA DO ELSE
+                                    else{
+                                        // MOSTRANDO PARA O USUARIO QUE NAO FOI POSSIVEL CADASTRAR O NOME DO LOGIN
+                                        printf("Nao foi possivel cadastrar esse Senha ...\n");
+                                        // PRINT PARA MOSTRAR QUE O USUARIO DEVE INSERIR O LOGIN
+                                        printf("Insira outro Senha (Entre 6 e 8 Caracteres): ");
+                                        // ESTAMOS GUARDANDO O VALOR DIGITADO NA VARIAVEL LOGIN
+                                        scanf("%s", &verificaSenha);
+                                        getchar();
+                                        // ESTAMOS INSERINDO O TAMANHO DA STRING QUE SE CHAMA LOGIN E ESTAMOS INSERINDO ELA NA VARIAVEL TAMANHO
+                                        tam = strlen(verificaSenha);
+                                    }
+                                //FIM DO DO WHILW JUNTO COM A CONDICAO DO WHILE
+                                }while(verificacao == 0 );
+                                printf("\n\033[32mSENHA ATUALIZADA COM SUCESSO !\033[0m\n\n");
+                                strcpy(senhas,verificaSenha);
+                        }
+                        menuPrincipal();
+                        while(scanf("%d", &escolha_menu) != 1){
+                            printf("Escolha somente uma das opcoes: >>");
+                            while(getchar() != '\n');
+                        }
+
+                    }
+
+                    else{
+                        printf("\033[32mSENHA CORRETA !\033[0m");
+                        abrirCaixa();
+                        printf("Caixa aberto com sucesso !\n");
+                        menuPrincipal();
+                            while(scanf("%d", &escolha_menu) != 1){
+                                printf("Escolha somente uma das opcoes: >>");
+                                while(getchar() != '\n');
+                            }
+                    }
+                }break;
             case 4:
+                // INICIANDO O WHILE PARA VERIFICAR SE O USUARIO CADASTROU UMA CONTA
+                while(verificaUsuario == 0){
+                    // MOSTRANDO PARA O USUARIO QUE NHENUM USUARIO FOI ENCONTRADO
+                    printf("\n\033[31mNenhum Usuario foi encontrado !\033[0m\n"
+                           "Favor cadastre um Usuario para prosseguir com o\033[31m SISTEMA !\033[0m\n");
+                    // CHAMANDO A FUNCAO DO MENU PRINCIPAL
+                    menuPrincipal();
+                    while(scanf("%d", &escolha_menu) != 1){
+                            printf("Escolha somente uma das opcoes >> ");
+                            while(getchar() != '\n');
+                    }
+                    // AQUI ESTOU VERIFICANDO SE A ESCOLHA QUE O USUARIO FEZ FOI A 1
+                    if(escolha_menu == 1){
+                        // REALIZANDO ISSO PARA O SUSUARIO SAIR DO WHILE
+                        verificaUsuario = 3;
+                    }break;
+                }
                 break;
             case 5:
                 printf("Relatorios\n1) Listagem de clientes\n2) Listagem de Produtos\n3)Listagem de vendas\n4)Voltar ao menu principal\n");
@@ -632,6 +901,6 @@ int main(){
         }
     }while(escolha_menu > 0 || escolha_menu < 7);
 
-
     return 0;
 }
+
